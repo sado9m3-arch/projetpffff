@@ -43,10 +43,28 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
 
   const fetchComplaints = async () => {
     try {
+      // Check if environment variables are configured
+      if (!import.meta.env.VITE_SUPABASE_URL || !import.meta.env.VITE_SUPABASE_ANON_KEY) {
+        console.error('Missing Supabase environment variables. Please check your .env file.');
+        return;
+      }
+
       const response = await fetch(
         `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/complaints?role=client&userId=${user.id}`,
         { headers: { Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}` } }
       );
+      
+      if (!response.ok) {
+        console.error(`HTTP error! status: ${response.status}`);
+        return;
+      }
+      
+      const contentType = response.headers.get('content-type');
+      if (!contentType || !contentType.includes('application/json')) {
+        console.error('Response is not JSON. Check if Supabase Edge Function is properly deployed.');
+        return;
+      }
+      
       const data = await response.json();
       if (data.success) setComplaints(data.data);
     } catch (error) {
