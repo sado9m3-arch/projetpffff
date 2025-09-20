@@ -55,12 +55,33 @@ export default function ComplaintForm({ onClose, onComplaintCreated }: Complaint
         title: formData.title,
         description: formData.description,
         client_id: user?.id,
+        
+        // Snake_case fields (original schema)
+        claim_number: formData.claimNumber,
+        article_number: formData.articleNumber,
+        article_description: formData.articleDescription,
+        delivery_note_number: formData.deliveryNoteNumber,
+        supplier: formData.supplier,
+        total_quantity: formData.totalQuantity,
+        defective_quantity: formData.defectiveQuantity,
+        contact_person: formData.contactPerson,
+        contact_name: formData.contactName,
+        contact_email: formData.contactEmail,
+        contact_phone: formData.contactPhone,
+        error_description: formData.errorDescription,
+        statement_response: formData.statementResponse,
+        report_deadline: formData.reportDeadline,
+        replacement: formData.replacement,
+        credit_note: formData.creditNote,
+        remarks: formData.remarks,
+        error_pictures: imageUrls,
+        
+        // CamelCase fields (duplicate schema)
         claimnumber: formData.claimNumber,
         creationdate: new Date().toISOString(),
         articlenumber: formData.articleNumber,
         articledescription: formData.articleDescription,
         deliverynotenumber: formData.deliveryNoteNumber,
-        supplier: formData.supplier,
         totalquantity: formData.totalQuantity,
         defectivequantity: formData.defectiveQuantity,
         contactperson: formData.contactPerson,
@@ -70,10 +91,9 @@ export default function ComplaintForm({ onClose, onComplaintCreated }: Complaint
         errordescription: formData.errorDescription,
         statementresponse: formData.statementResponse,
         reportdeadline: formData.reportDeadline,
-        replacement: formData.replacement,
         creditnote: formData.creditNote,
-        remarks: formData.remarks,
-        errorpictures: JSON.stringify(imageUrls),
+        errorpictures: imageUrls,
+        
         status: 'pending'
       };
 
