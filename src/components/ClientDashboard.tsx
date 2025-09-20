@@ -88,10 +88,28 @@ export default function ClientDashboard({ user }: ClientDashboardProps) {
       const imageUrls = await uploadFiles(formData.errorPictures);
 
       const payload = {
-        ...formData,
+        title: formData.title,
+        description: formData.description,
         client_id: user.id,
-        creationDate: new Date().toISOString(), // overwrite each submit
-        errorPictures: imageUrls,
+        claimnumber: formData.claimNumber,
+        creationdate: new Date().toISOString(),
+        articlenumber: formData.articleNumber,
+        articledescription: formData.articleDescription,
+        deliverynotenumber: formData.deliveryNoteNumber,
+        supplier: formData.supplier,
+        totalquantity: formData.totalQuantity,
+        defectivequantity: formData.defectiveQuantity,
+        contactperson: formData.contactPerson,
+        contactname: formData.contactName,
+        contactemail: formData.contactEmail,
+        contactphone: formData.contactPhone,
+        errordescription: formData.errorDescription,
+        statementresponse: formData.statementResponse,
+        reportdeadline: formData.reportDeadline,
+        replacement: formData.replacement,
+        creditnote: formData.creditNote,
+        remarks: formData.remarks,
+        errorpictures: imageUrls,
       };
 
       const response = await fetch(
