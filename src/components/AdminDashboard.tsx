@@ -17,6 +17,7 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
     email: '',
     role: 'client' as 'client' | 'fournisseur'
   });
+  const [selectedComplaint, setSelectedComplaint] = useState<Complaint | null>(null);
 
   useEffect(() => {
     fetchComplaints();
@@ -260,7 +261,11 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
           </div>
 
           {complaints.map((complaint) => (
-            <div key={complaint.id} className="bg-white rounded-lg shadow-sm border p-6">
+            <div
+              key={complaint.id}
+              className="bg-white rounded-lg shadow-sm border p-6 cursor-pointer hover:bg-gray-50"
+              onClick={() => setSelectedComplaint(complaint)}
+            >
               <div className="flex justify-between items-start mb-4">
                 <div className="flex-1">
                   <div className="flex items-center space-x-3 mb-2">
@@ -298,6 +303,36 @@ export default function AdminDashboard({ user }: AdminDashboardProps) {
               </div>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Complaint Details Modal */}
+      {selectedComplaint && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-30">
+          <div className="bg-white rounded-lg shadow-lg p-8 max-w-lg w-full relative">
+            <button
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-700"
+              onClick={() => setSelectedComplaint(null)}
+            >
+              ×
+            </button>
+            <h3 className="text-xl font-bold mb-2">{selectedComplaint.title}</h3>
+            <span className={`px-2 py-1 rounded-full text-xs font-medium ${getStatusColor(selectedComplaint.status)}`}>
+              {getStatusText(selectedComplaint.status)}
+            </span>
+            <p className="mt-4 text-gray-700">{selectedComplaint.description}</p>
+            <div className="mt-2 text-sm text-gray-500">
+              <Calendar className="w-4 h-4 inline mr-1" />
+              {new Date(selectedComplaint.created_at).toLocaleDateString('fr-FR')}
+            </div>
+            {selectedComplaint.client && (
+              <p className="text-sm text-gray-500 mt-2">Client: {selectedComplaint.client.email}</p>
+            )}
+            {selectedComplaint.fournisseur && (
+              <p className="text-sm text-gray-500">Fournisseur: {selectedComplaint.fournisseur.email}</p>
+            )}
+            {/* Add more details if needed */}
+          </div>
         </div>
       )}
 

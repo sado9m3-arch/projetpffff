@@ -22,13 +22,38 @@ export interface PasswordChangeRequest {
 
 export interface Complaint {
   id: string;
-  title: string;
-  description: string;
   client_id: string;
   fournisseur_id?: string;
+
+  // Nouveaux champs formulaire
+  claimNumber: string;
+  creationDate: string;
+  articleNumber: string;
+  articleDescription: string;
+  deliveryNoteNumber: string;
+  supplier: string;
+  totalQuantity: number;
+  defectiveQuantity: number;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  errorDescription: string;
+  remarks: string;
+
+  // Cases à cocher
+  replacement: boolean;
+  creditNote: boolean;
+  repair: boolean;
+  resend: boolean;
+
+  // Images (peuvent être des URL ou des fichiers base64 côté API)
+  errorPictures?: string[];
+
+  // Statut et métadonnées
   status: 'pending' | 'assigned' | 'resolved';
   created_at: string;
   updated_at: string;
+
   client?: {
     email: string;
   };
@@ -38,15 +63,39 @@ export interface Complaint {
 }
 
 export interface CreateComplaintRequest {
-  title: string;
-  description: string;
   client_id: string;
+
+  // Champs obligatoires
+  claimNumber: string;
+  articleNumber: string;
+  articleDescription: string;
+  deliveryNoteNumber: string;
+  supplier: string;
+  totalQuantity: number;
+  defectiveQuantity: number;
+  contactName: string;
+  contactEmail: string;
+  contactPhone: string;
+  errorDescription: string;
+
+  // Champs optionnels
+  remarks?: string;
+  replacement?: boolean;
+  creditNote?: boolean;
+  repair?: boolean;
+  resend?: boolean;
+  errorPictures?: string[];
 }
 
 export interface UpdateComplaintRequest {
   id: string;
   status?: string;
   fournisseur_id?: string;
+  remarks?: string;
+  replacement?: boolean;
+  creditNote?: boolean;
+  repair?: boolean;
+  resend?: boolean;
 }
 
 export interface UserManagement {
