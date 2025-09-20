@@ -555,8 +555,7 @@ export default function AdminDashboard() {
                       <Download className="w-4 h-4 mr-2" />
                       Voir Rapport
                     </button>
-                    </div>
-                  )}
+                  </div>
                 </div>
               </div>
             ))}
