@@ -50,8 +50,23 @@ Deno.serve(async (req: Request) => {
     }
 
     // Get Supabase client
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    // Check for required environment variables
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Missing required environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          message: "Server configuration error: Missing environment variables" 
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     const tableMap = {
       admin: "admin",
@@ -74,6 +89,7 @@ Deno.serve(async (req: Request) => {
     );
 
     if (!response.ok) {
+      console.error("Database query failed:", response.status, response.statusText);
       throw new Error("Database query failed");
     }
 

@@ -21,6 +21,21 @@ Deno.serve(async (req: Request) => {
     const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
     const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
 
+    // Check for required environment variables
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Missing required environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          message: "Server configuration error: Missing environment variables" 
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
+
     const url = new URL(req.url);
     const pathParts = url.pathname.split('/');
     const action = pathParts[pathParts.length - 1];
@@ -50,6 +65,10 @@ Deno.serve(async (req: Request) => {
       );
 
       if (!clientsResponse.ok || !fournisseursResponse.ok) {
+        console.error("Failed to fetch users:", {
+          clientsStatus: clientsResponse.status,
+          fournisseursStatus: fournisseursResponse.status
+        });
         throw new Error("Failed to fetch users");
       }
 
@@ -70,8 +89,26 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    // GET /fournisseurs - Get all fournisseurs for assignment
-    if (req.method === "GET" && action === "fournisseurs") {
+    return new Response(
+      JSON.stringify({ success: false, message: "Method not allowed" }),
+      {
+        status: 405,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+
+  } catch (error) {
+    console.error("Users API error:", error);
+    return new Response(
+      JSON.stringify({ success: false, message: "Internal server error" }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, "Content-Type": "application/json" },
+      }
+    );
+  }
+});
+
       const response = await fetch(
         `${supabaseUrl}/rest/v1/fournisseurs?select=id,email`,
         {

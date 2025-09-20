@@ -58,8 +58,23 @@ Deno.serve(async (req: Request) => {
       );
     }
 
-    const supabaseUrl = Deno.env.get("SUPABASE_URL")!;
-    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+    const supabaseUrl = Deno.env.get("SUPABASE_URL");
+    const supabaseServiceKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    // Check for required environment variables
+    if (!supabaseUrl || !supabaseServiceKey) {
+      console.error("Missing required environment variables: SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+      return new Response(
+        JSON.stringify({ 
+          success: false, 
+          message: "Server configuration error: Missing environment variables" 
+        }),
+        {
+          status: 500,
+          headers: { ...corsHeaders, "Content-Type": "application/json" },
+        }
+      );
+    }
 
     const tableMap = {
       admin: "admin",
@@ -91,6 +106,7 @@ Deno.serve(async (req: Request) => {
     );
 
     if (!getUserResponse.ok) {
+      console.error("Failed to fetch user:", getUserResponse.status, getUserResponse.statusText);
       throw new Error("Failed to fetch user");
     }
 
@@ -137,6 +153,7 @@ Deno.serve(async (req: Request) => {
     );
 
     if (!updateResponse.ok) {
+      console.error("Failed to update password:", updateResponse.status, updateResponse.statusText);
       throw new Error("Failed to update password");
     }
 
