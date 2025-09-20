@@ -6,6 +6,7 @@ import type { ComplaintFormData, Complaint } from '../types';
 interface ComplaintFormProps {
   onClose: () => void;
   onComplaintCreated: (complaint: Complaint) => void;
+  isAdmin?: boolean;
 }
 
 const initialFormData: ComplaintFormData = {
@@ -31,11 +32,38 @@ const initialFormData: ComplaintFormData = {
   errorPictures: [],
 };
 
-export default function ComplaintForm({ onClose, onComplaintCreated }: ComplaintFormProps) {
+export default function ComplaintForm({ onClose, onComplaintCreated, isAdmin = false }: ComplaintFormProps) {
   const { user } = useAuth();
   const [formData, setFormData] = useState<ComplaintFormData>(initialFormData);
+  const [selectedClient, setSelectedClient] = useState('');
+  const [clients, setClients] = useState<{ id: string; email: string }[]>([]);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState('');
+
+  useEffect(() => {
+    if (isAdmin) {
+      fetchClients();
+    }
+  }, [isAdmin]);
+
+  const fetchClients = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_SUPABASE_URL}/functions/v1/clients`,
+        {
+          headers: {
+            'Authorization': `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setClients(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching clients:', error);
+    }
+  };
 
   const uploadFiles = async (files: File[]) => {
     if (!files.length) return [];
@@ -54,7 +82,7 @@ export default function ComplaintForm({ onClose, onComplaintCreated }: Complaint
       const payload = {
         title: formData.title,
         description: formData.description,
-        client_id: user?.id,
+        client_id: isAdmin ? selectedClient : user?.id,
         
         // Snake_case fields (original schema)
         claim_number: formData.claimNumber,
@@ -142,6 +170,29 @@ export default function ComplaintForm({ onClose, onComplaintCreated }: Complaint
             <div className="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg flex items-center">
               <AlertCircle className="w-5 h-5 mr-2 flex-shrink-0" />
               <span className="text-sm">{error}</span>
+            </div>
+          )}
+
+          {/* Client Selection (Admin only) */}
+          {isAdmin && (
+            <div className="bg-indigo-50 p-6 rounded-xl">
+              <h4 className="text-lg font-semibold text-gray-900 mb-4">Sélection du Client</h4>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Client *</label>
+                <select
+                  required
+                  value={selectedClient}
+                  onChange={(e) => setSelectedClient(e.target.value)}
+                  className="input-field"
+                >
+                  <option value="">Sélectionner un client...</option>
+                  {clients.map((client) => (
+                    <option key={client.id} value={client.id}>
+                      {client.email}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </div>
           )}
 
