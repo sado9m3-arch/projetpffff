@@ -56,6 +56,7 @@ export default function ComplaintForm({ onClose, onComplaintCreated }: Complaint
         description: formData.description,
         client_id: user?.id,
         claimnumber: formData.claimNumber,
+        creationdate: new Date().toISOString(),
         articlenumber: formData.articleNumber,
         articledescription: formData.articleDescription,
         deliverynotenumber: formData.deliveryNoteNumber,
@@ -72,7 +73,7 @@ export default function ComplaintForm({ onClose, onComplaintCreated }: Complaint
         replacement: formData.replacement,
         creditnote: formData.creditNote,
         remarks: formData.remarks,
-        errorpictures: imageUrls,
+        errorpictures: JSON.stringify(imageUrls),
         status: 'pending'
       };
 
